@@ -8,6 +8,7 @@ A simple, clean GUI application for recording video from Pupil Labs Neon devices
 - GUI for easy recording control
 - LSL marker synchronization for precise timing
 - Configurable save directory
+- CUstomizable output filenames with timestamp support
 - Modern Python project structure with uv
 
 ## Requirements
@@ -47,6 +48,7 @@ The GUI provides:
 - Real-time video preview
 - Recording start/stop buttons
 - Save directory selection
+- Customizable filename with `{timestamp}` placeholder support
 - Activity log
 
 For command-line usage, see the `script.py` file in the parent directory.
@@ -73,7 +75,13 @@ uv run mypy src/
 
 ## Output
 
-Video files are saved as MP4 format with timestamps in the filename.
+Video files are saved as MP4 format. You can customize the filename using the filename input field in the GUI:
+- Use `{timestamp}` as a placeholder for automatic timestamp insertion (format: YYYYMMDD_HHMMSS)
+- Examples:
+  - `scene_recording_{timestamp}` → `scene_recording_20260202_143052.mp4`
+  - `my_experiment_{timestamp}` → `my_experiment_20260202_143052.mp4`
+  - `custom_name` → `custom_name.mp4`
+
 LSL markers are sent for precise synchronization:
 - `scene_start`: When recording begins
 - `scene_end`: When recording stops
