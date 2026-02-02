@@ -13,6 +13,7 @@ from PyQt6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
+    QLineEdit,
     QMainWindow,
     QMessageBox,
     QPushButton,
@@ -62,6 +63,7 @@ class NeonGUI(QMainWindow):
         super().__init__()
         self.recorder = NeonRecorder()
         self.save_directory = os.path.expanduser("~/Desktop")
+        self.default_filename_schema = "scene_recording_{timestamp}"
         self.setup_ui()
         self.setup_timer()
         
@@ -127,6 +129,15 @@ class NeonGUI(QMainWindow):
         dir_layout.addWidget(self.browse_btn)
         
         recording_layout.addLayout(dir_layout)
+        
+        # Filename schema input
+        filename_label = QLabel("Filename (use {timestamp} for auto-timestamp):")
+        recording_layout.addWidget(filename_label)
+        
+        self.filename_input = QLineEdit()
+        self.filename_input.setText(self.default_filename_schema)
+        self.filename_input.setPlaceholderText("e.g., scene_recording_{timestamp}")
+        recording_layout.addWidget(self.filename_input)
         
         # Recording buttons
         self.start_btn = QPushButton("Start Recording")
@@ -227,11 +238,20 @@ class NeonGUI(QMainWindow):
     def start_recording(self):
         """Start recording."""
         try:
-            # Generate filename
+            # Generate filename from user input or default schema
+            filename_schema = self.filename_input.text().strip()
+            if not filename_schema:
+                filename_schema = self.default_filename_schema
+            
+            # Replace {timestamp} placeholder with actual timestamp
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = os.path.join(
-                self.save_directory, f"scene_recording_{timestamp}.mp4"
-            )
+            filename_base = filename_schema.replace("{timestamp}", timestamp)
+            
+            # Add .mp4 extension if not present
+            if not filename_base.endswith(".mp4"):
+                filename_base += ".mp4"
+            
+            filename = os.path.join(self.save_directory, filename_base)
             
             self.recorder.start_recording(filename)
             
